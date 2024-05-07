@@ -9,9 +9,19 @@ const Nav = () => {
 
   const isUserLoggedIn = true;
   const [providers, setProviders] = useState(null)
-
+  const [toggle, setToggle] = useState(false)
   useEffect(()=>{
-    
+    const fetchProviders = async ()=>{
+      try {
+        const response = await getProviders()
+        setProviders(response)
+      } catch (error) {
+        console.log(error)        
+      }
+    }
+
+    fetchProviders()
+
   }, [])
 
 
@@ -56,8 +66,78 @@ const Nav = () => {
             </div>
           </div>
           :
-          <></>
+          <>
+            {providers&&
+            Object.values(providers).map((provider)=>(
+              <button
+                type='button'
+                key={provider.name}
+                onClick={() => signIn(provider.id)}
+                className='black_btn'>
+                SignIn
+
+              </button>
+            ))}
+          </>
         }
+      </div>
+
+      {/* Mobile Nav */}
+
+      <div className='sm:hidden flex relative'>
+        {isUserLoggedIn ? (
+          <div>
+            <Image
+              src = "/assets/images/logo.svg"
+              width={37}
+              height={37}
+              className='rounded-full relative'
+              alt='profile'
+              onClick={() => setToggle(prev => !prev)}
+            />
+            {/* Dropdown */}
+             <div className={`w-[200px] py-3 px-2 gap-3 bg-white rounded-lg items-end sm:hidden ${!toggle?'scale-y-0 delay-[100ms]': 'scale-y-100'}  origin-top overflow-hidden flex flex-col  absolute mt-5 translate-x-[-80%] transition-all duration-200 border-[1.5px] border-slate-200`}>
+              <Link 
+                className={`dropdown_link transition-all duration-100  ${toggle&& "opacity-100"} opacity-0`} 
+                href={'/my-profile'}
+                onClick={() => setToggle(false)}>
+                  My Profile
+              </Link>
+              <Link 
+                className={`dropdown_link transition-all duration-100 ${toggle&& "opacity-100"} opacity-0`}  
+                href={'/create-prompt'}
+                onClick={() => setToggle(false)}>
+                  Create Prompt
+              </Link>
+              <button
+              className={`black_btn w-full mt-3 transition-all duration-100 px-3 py-2 ${toggle&& "opacity-100"} opacity-0`} 
+                type='button'
+                onClick={()=>{
+                  setToggle(false);
+                  signOut()
+                }}>
+                Sign Out
+              </button>
+             </div>
+          </div>
+        )
+        :
+        <>
+         {providers&&
+            Object.values(providers).map((provider)=>(
+              <button
+                type='button'
+                key={provider.name}
+                onClick={() => signIn(provider.id)}
+                className='black_btn'>
+                SignIn
+
+              </button>
+            ))}
+        </>
+        }
+
+       
       </div>
     </nav>
   )
