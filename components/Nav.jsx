@@ -7,17 +7,16 @@ import { signOut, signIn, useSession, getProviders} from 'next-auth/react'
 
 const Nav = () => {
 
-  const isUserLoggedIn = true;
+  const {data:session} = useSession()
   const [providers, setProviders] = useState(null)
   const [toggle, setToggle] = useState(false)
   useEffect(()=>{
+
     const fetchProviders = async ()=>{
-      try {
+      
         const response = await getProviders()
         setProviders(response)
-      } catch (error) {
-        console.log(error)        
-      }
+     
     }
 
     fetchProviders()
@@ -39,7 +38,7 @@ const Nav = () => {
 
       <div>
         {
-          isUserLoggedIn 
+          session 
           ? 
           <div className='sm:flex hidden'>
             <div className='flex gap-3 md:gap-5'>
@@ -56,7 +55,7 @@ const Nav = () => {
 
               <Link href={'/profile'}>
                 <Image 
-                  src={"/assets/images/logo.svg"}
+                  src={session?.user.image}
                   width={37}
                   height={37}
                   className='rounded-full'
@@ -85,10 +84,10 @@ const Nav = () => {
       {/* Mobile Nav */}
 
       <div className='sm:hidden flex relative'>
-        {isUserLoggedIn ? (
+        {session ? (
           <div>
             <Image
-              src = "/assets/images/logo.svg"
+              src = {session?.user.image}
               width={37}
               height={37}
               className='rounded-full relative'
